@@ -1,0 +1,54 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+div.mail-table-container {
+	padding-top: 50px;
+}
+
+.mail-preview-table {
+	table-layout: fixed;
+	width: 100%;
+	border-spacing: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+.mail-preview-table .from-col {
+	width: 200px;
+}
+
+.mail-preview-table .header-col {
+	width: 100%;
+}
+
+.mail-preview-table .row {
+	color: #222;
+	background-color: rgba(255, 255, 255, .9);
+	cursor: pointer;
+}
+
+.mail-preview-table .cell {
+	padding: 3px 6px 3px 10px;
+	border-bottom: 1px #e5e5e5 solid;
+	font-size: 80%;
+	font-weight: bold;
+	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+
+}

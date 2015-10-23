@@ -1,0 +1,13 @@
+﻿<div class="mail-table-container">
+	<table class="mail-preview-table">
+		<colgroup>
+			<col class="null" />
+			<col class="from-col" />
+			<col class="header-col" />
+		</colgroup>
+		<tr class="row" ng-repeat="mail in mails">
+			<td class="cell">{{mail.From}}</td>
+			<td class="cell">{{mail.Header}}</td>
+		</tr>
+	</table>
+</div>
