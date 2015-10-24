@@ -1,1 +1,16 @@
-﻿<div ng-bind-html="to_trusted(mail.Body)"></div>
+﻿<div class="mail-details-container">
+	<div class="button-panel">
+		<div class="button">Delete</div>
+	</div>
+	<div class="mail-body-container">
+		<div class="mail-subject">
+			<h2>
+				{{mail.Subject}}
+			</h2>
+		</div>
+		<div class="mail-body">
+			<div class="mail-from" ng-bind="mail.From"></div>
+			<div class="content" ng-bind-html="to_trusted(mail.Body)"></div>
+		</div>
+	</div>
+</div>
