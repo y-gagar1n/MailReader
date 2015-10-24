@@ -13,10 +13,16 @@ namespace MailReader.Backend
 	{
 		public IEnumerable<MailPreview> FetchRecentMailsPreview()
 		{
-			var msgs = new List<string> {"1", "2", "3"};
+			var msgs = new List<Tuple<int, Message>>();
 
-			var i = 0;
-			return msgs.Select(x => new MailPreview { Header = "header" + i++, From = "anonymous@gmail.com", Body = "Hi! "});
+			int number = 0;
+			
+			return msgs.Select(x => new MailPreview { From = x.Item2.Headers.From.ToString(), Header = x.Item2.Headers.Subject, Number = x.Item1 });
+		}
+
+		public void GetMail(int mailNumber)
+		{
+			
 		}
 
 		/// <summary>
@@ -29,7 +35,7 @@ namespace MailReader.Backend
 		/// <param name="username">Username of the user on the server</param>
 		/// <param name="password">Password of the user on the server</param>
 		/// <returns>All Messages on the POP3 server</returns>
-		private List<Message> FetchAllMessages(string hostname, int port, bool useSsl, string username, string password)
+		private List<Tuple<int, Message>> FetchAllMessages(string hostname, int port, bool useSsl, string username, string password)
 		{
 			// The client disconnects from the server when being disposed
 			using (Pop3Client client = new Pop3Client())
@@ -44,14 +50,14 @@ namespace MailReader.Backend
 				int messageCount = client.GetMessageCount();
 
 				// We want to download all messages
-				List<Message> allMessages = new List<Message>(messageCount);
+				List<Tuple<int, Message>> allMessages = new List<Tuple<int, Message>>(messageCount);
 
 				// Messages are numbered in the interval: [1, messageCount]
 				// Ergo: message numbers are 1-based.
 				// Most servers give the latest message the highest number
 				for (int i = messageCount; i > 0; i--)
 				{
-					allMessages.Add(client.GetMessage(i));
+					allMessages.Add(Tuple.Create(i, client.GetMessage(i)));
 				}
 
 				// Now return the fetched messages
