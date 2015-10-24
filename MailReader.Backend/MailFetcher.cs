@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using MailReader.Backend.DataAccess;
 using MailReader.Backend.Models;
 using S22.Imap;
 
@@ -16,6 +17,7 @@ namespace MailReader.Backend
 		public MailFetcher()
 		{
 			_client = new ImapClient("", 0, "", "");
+			var repo = new MailRepository();
 		}
 
 		public IEnumerable<MailPreview> FetchRecentMailsPreview()
