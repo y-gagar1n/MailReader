@@ -1,12 +1,17 @@
 ﻿var app = angular.module("MailReaderApp", ["ngRoute"]);
-app.controller("MailController", MailController);
+app.controller("MailListController", MailListController);
+app.controller("MailDetailsController", MailDetailsController);
 app.controller("HomeController", HomeController);
 
 var configFunction = function($routeProvider) {
 	$routeProvider.when('/', {
 		templateUrl: "/Home/MailList",
-		controller: 'MailController'
-	});
+		controller: 'MailListController'
+	})
+	.when('/mail/:mailId', {
+		templateUrl: "/Home/MailDetails",
+		controller: 'MailDetailsController'
+	});;
 };
 configFunction.injector = ["$routeProvider"];
 

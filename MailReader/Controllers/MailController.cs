@@ -13,19 +13,27 @@ namespace MailReader.Controllers
 {
     public class MailController : ApiController
     {
-		[System.Web.Http.HttpGet]
+	    private MailFetcher _fetcher;
+
+	    public MailController()
+	    {
+		    _fetcher = new MailFetcher();
+	    }
+
+	    [System.Web.Http.HttpGet]
 		[System.Web.Http.Route("api/mail")]
 		public IEnumerable<MailPreview> GetMails()
 	    {
-		    var fetcher = new MailFetcher();
-		    return fetcher.FetchRecentMailsPreview();
+		    _fetcher = new MailFetcher();
+		    return _fetcher.FetchRecentMailsPreview();
 	    }
 
-	    //public ActionResult Index()
-	    //{
-		   // return View();
-	    //}
-
-
-    }
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route("api/mail/{uid}")]
+		public MailBody GetMails(uint uid)
+		{
+			_fetcher = new MailFetcher();
+			return _fetcher.GetMail(uid);
+		}
+	}
 }

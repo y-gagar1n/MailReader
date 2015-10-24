@@ -5,7 +5,7 @@
 			<col class="from-col" />
 			<col class="header-col" />
 		</colgroup>
-		<tr class="row" ng-repeat="mail in mails" ng-click="openMail(mail.Number)">
+		<tr class="row" ng-repeat="mail in mails" ng-click="openMailDetails(mail.Number)">
 			<td class="cell">{{mail.From}}</td>
 			<td class="cell">{{mail.Header}}</td>
 		</tr>

@@ -21,5 +21,12 @@ namespace MailReader.Controllers
 
 			return View();
 		}
+
+		public ActionResult MailDetails()
+		{
+			ViewBag.Title = "MailDetails";
+
+			return View();
+		}
 	}
 }

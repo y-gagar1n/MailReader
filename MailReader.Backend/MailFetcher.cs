@@ -1,68 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using MailReader.Backend.Models;
-using OpenPop.Mime;
-using OpenPop.Pop3;
+using S22.Imap;
 
 namespace MailReader.Backend
 {
 	public class MailFetcher
 	{
+		private readonly ImapClient _client;
+
+		public MailFetcher()
+		{
+			_client = new ImapClient("", 0, "", "");
+		}
+
 		public IEnumerable<MailPreview> FetchRecentMailsPreview()
 		{
-			var msgs = new List<Tuple<int, Message>>();
+			var msgs = FetchAllMessages();
 
-			int number = 0;
-			
-			return msgs.Select(x => new MailPreview { From = x.Item2.Headers.From.ToString(), Header = x.Item2.Headers.Subject, Number = x.Item1 });
+			return msgs.Select(x => new MailPreview { From = x.Item2.From.DisplayName, Header = x.Item2.Subject, Number = x.Item1 });
 		}
 
-		public void GetMail(int mailNumber)
+		public MailBody GetMail(uint mailUid)
 		{
-			
+			var msg = _client.GetMessage(mailUid, false);
+			return new MailBody {Body = PrepareBody(msg.Body), From = msg.From.DisplayName, Header = msg.Subject};
 		}
 
-		/// <summary>
-		/// Example showing:
-		///  - how to fetch all messages from a POP3 server
-		/// </summary>
-		/// <param name="hostname">Hostname of the server. For example: pop3.live.com</param>
-		/// <param name="port">Host port to connect to. Normally: 110 for plain POP3, 995 for SSL POP3</param>
-		/// <param name="useSsl">Whether or not to use SSL to connect to server</param>
-		/// <param name="username">Username of the user on the server</param>
-		/// <param name="password">Password of the user on the server</param>
-		/// <returns>All Messages on the POP3 server</returns>
-		private List<Tuple<int, Message>> FetchAllMessages(string hostname, int port, bool useSsl, string username, string password)
+		public string PrepareBody(string input)
 		{
-			// The client disconnects from the server when being disposed
-			using (Pop3Client client = new Pop3Client())
-			{
-				// Connect to the server
-				client.Connect(hostname, port, useSsl);
+			var lines = input.Split(new string[] {Environment.NewLine}, StringSplitOptions.None).ToList();
+			var htmlLines = lines.Select(l => "<p>" + l + "</p>");
+			return string.Join("", htmlLines);
+		}
+		
+		private IEnumerable<Tuple<uint, MailMessage>> FetchAllMessages()
+		{
+			IEnumerable<uint> uids = _client.Search(SearchCondition.All()).Reverse().Take(20);
+			IList<MailMessage> messages = _client.GetMessages(uids).ToList();
+			
+			return messages.Zip(uids, (msg, uid) => Tuple.Create(uid, msg));
 
-				// Authenticate ourselves towards the server
-				client.Authenticate(username, password);
-
-				// Get the number of messages in the inbox
-				int messageCount = client.GetMessageCount();
-
-				// We want to download all messages
-				List<Tuple<int, Message>> allMessages = new List<Tuple<int, Message>>(messageCount);
-
-				// Messages are numbered in the interval: [1, messageCount]
-				// Ergo: message numbers are 1-based.
-				// Most servers give the latest message the highest number
-				for (int i = messageCount; i > 0; i--)
-				{
-					allMessages.Add(Tuple.Create(i, client.GetMessage(i)));
-				}
-
-				// Now return the fetched messages
-				return allMessages;
-			}
 		}
 	}
 }
