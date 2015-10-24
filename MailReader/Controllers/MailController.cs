@@ -13,9 +13,9 @@ namespace MailReader.Controllers
 {
     public class MailController : ApiController
     {
-	    private MailFetcher _fetcher;
+	    private static MailFetcher _fetcher;
 
-	    public MailController()
+	    static MailController()
 	    {
 		    _fetcher = new MailFetcher();
 	    }
@@ -24,7 +24,6 @@ namespace MailReader.Controllers
 		[System.Web.Http.Route("api/mail")]
 		public IEnumerable<MailPreview> GetMails()
 	    {
-		    _fetcher = new MailFetcher();
 		    return _fetcher.FetchRecentMailsPreview();
 	    }
 
@@ -32,7 +31,6 @@ namespace MailReader.Controllers
 		[System.Web.Http.Route("api/mail/{uid}")]
 		public MailBody GetMails(uint uid)
 		{
-			_fetcher = new MailFetcher();
 			return _fetcher.GetMail(uid);
 		}
 	}

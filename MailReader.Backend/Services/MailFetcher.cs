@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using MailReader.Backend.DataAccess;
 using MailReader.Backend.Models;
 using S22.Imap;
 
-namespace MailReader.Backend
+namespace MailReader.Backend.Services
 {
 	public class MailFetcher
 	{
 		private readonly ImapClient _client;
+		private MailRepository _repo;
 
 		public MailFetcher()
 		{
-			_client = new ImapClient("", 0, "", "");
-			var repo = new MailRepository();
+			var credProvider = new MailCredentialsProvider();
+			_client = new ImapClient("imap.gmail.com", 993, credProvider.GetLogin(), credProvider.GetPassword(), AuthMethod.Login, true);
+			_repo = new MailRepository();
 		}
 
 		public IEnumerable<MailPreview> FetchRecentMailsPreview()
