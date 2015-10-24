@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MailReader.Backend.Models;
 
 namespace MailReader.Backend.DataAccess
 {
@@ -30,17 +31,27 @@ namespace MailReader.Backend.DataAccess
 			csBuilder.IntegratedSecurity = true;
 			csBuilder.UserID = "sa";
 			csBuilder.Password = "1qaz@WSX";
-
+			
 			var connection = new SqlConnection(csBuilder.ConnectionString);
 			connection.Open();
 			return connection;
 		}
 
-		public void GetMails()
+		public IEnumerable<MailDetails> GetMails()
 		{
-			using (var connection = new SqlConnection())
+			var runner = new SqlScriptRunner();
+			using (var connection = CreateConnection())
 			{
-				
+				return runner.GetSavedMails(connection).ToList();
+			}
+		}
+
+		public void SaveMail(MailDetails mail)
+		{
+			var runner = new SqlScriptRunner();
+			using (var connection = CreateConnection())
+			{
+				runner.InsertIntoMails(connection, mail);
 			}
 		}
 	}

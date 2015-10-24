@@ -20,17 +20,17 @@ namespace MailReader.Backend.Services
 			_repo = new MailRepository();
 		}
 
-		public IEnumerable<MailPreview> FetchRecentMailsPreview()
+		public IEnumerable<MailDetails> FetchRecentMailsPreview()
 		{
 			var msgs = FetchAllMessages();
 
-			return msgs.Select(x => new MailPreview { From = x.Item2.From.DisplayName, Header = x.Item2.Subject, Number = x.Item1 });
+			return msgs;
 		}
 
-		public MailBody GetMail(uint mailUid)
+		public MailDetails GetMail(uint mailUid)
 		{
 			var msg = _client.GetMessage(mailUid, false);
-			return new MailBody {Body = PrepareBody(msg.Body), From = msg.From.DisplayName, Header = msg.Subject};
+			return new MailDetails {Body = PrepareBody(msg.Body), From = msg.From.DisplayName, Subject = msg.Subject};
 		}
 
 		public string PrepareBody(string input)
@@ -40,12 +40,33 @@ namespace MailReader.Backend.Services
 			return string.Join("", htmlLines);
 		}
 		
-		private IEnumerable<Tuple<uint, MailMessage>> FetchAllMessages()
+		private IEnumerable<MailDetails> FetchAllMessages()
 		{
-			IEnumerable<uint> uids = _client.Search(SearchCondition.All()).Reverse().Take(20);
-			IList<MailMessage> messages = _client.GetMessages(uids).ToList();
-			
-			return messages.Zip(uids, (msg, uid) => Tuple.Create(uid, msg));
+			var savedMails = _repo.GetMails().ToList();
+			var maxId = savedMails.Any() ? savedMails.Max(x => x.Id) : 0;
+
+			IEnumerable<uint> uids = _client
+				.Search(SearchCondition.GreaterThan(maxId))
+				.Reverse()
+				.Take(20)
+				.Where(x => x > maxId);
+
+			IList<MailDetails> newMessages = _client
+				.GetMessages(uids)
+				.Zip(uids, (msg, id) => new MailDetails
+			{
+				Id = id,
+				Subject = msg.Subject,
+				Body = msg.Body,
+				From = msg.From.DisplayName
+			}).ToList();
+
+			foreach (var newMessage in newMessages)
+			{
+				_repo.SaveMail(newMessage);
+			}
+
+			return savedMails.Concat(newMessages);
 
 		}
 	}

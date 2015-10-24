@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace MailReader.Backend.Models
 {
-	public class MailBody
+	public class MailDetails
 	{
 		public string Body { get; set; }
-		public string Header { get; set; }
+		public string Subject { get; set; }
 		public string From { get; set; }
-		public uint Number { get; set; }
+		public uint Id { get; set; }
 	}
 }

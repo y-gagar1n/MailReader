@@ -8,8 +8,8 @@ namespace MailReader.Backend.Models
 {
 	public class MailPreview
 	{
-		public string Header { get; set; }
+		public string Subject { get; set; }
 		public string From { get; set; }
-		public uint Number { get; set; }
+		public uint Id { get; set; }
 	}
 }

@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using MailReader.Backend;
 using MailReader.Backend.Models;
+using MailReader.Backend.Services;
 using MailReader.Models.Mail;
 
 namespace MailReader.Controllers
@@ -24,12 +25,17 @@ namespace MailReader.Controllers
 		[System.Web.Http.Route("api/mail")]
 		public IEnumerable<MailPreview> GetMails()
 	    {
-		    return _fetcher.FetchRecentMailsPreview();
+		    return _fetcher.FetchRecentMailsPreview().Select(x => new MailPreview()
+		    {
+			    From = x.From,
+				Subject = x.Subject,
+				Id = x.Id
+		    });
 	    }
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route("api/mail/{uid}")]
-		public MailBody GetMails(uint uid)
+		public MailDetails GetMails(uint uid)
 		{
 			return _fetcher.GetMail(uid);
 		}
