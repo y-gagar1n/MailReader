@@ -20,9 +20,9 @@ namespace MailReader.Backend.Services
 			_repo = new MailRepository();
 		}
 
-		public IEnumerable<MailDetails> FetchRecentMailsPreview(int take, int skip)
+		public IEnumerable<MailDetails> FetchRecentMailsPreview(int take, int skip, string mailbox)
 		{
-			var msgs = FetchAllMessages(take, skip);
+			var msgs = FetchAllMessages(take, skip, mailbox);
 
 			return msgs;
 		}
@@ -54,10 +54,10 @@ namespace MailReader.Backend.Services
 			return string.Join("", htmlLines);
 		}
 		
-		private IEnumerable<MailDetails> FetchAllMessages(int take, int skip)
+		private IEnumerable<MailDetails> FetchAllMessages(int take, int skip, string mailbox)
 		{
 			IEnumerable<uint> uids = _client
-				.Search(SearchCondition.All())
+				.Search(SearchCondition.All(), mailbox)
 				.Reverse()
 				.Skip(skip)
 				.Take(take)
@@ -67,14 +67,14 @@ namespace MailReader.Backend.Services
 
 			var absentUids = uids.Except(cachedMails.Select(x => x.Id)).ToList();
 
-			var absentMails = _client.GetMessages(absentUids)
-				.Zip(absentUids, (msg, id) => new MailDetails
+			var absentMails = _client.GetMessages(absentUids,mailbox: mailbox)
+				.Zip(absentUids, (msg, id) => msg.From != null ? new MailDetails
 				{
 					Id = id,
 					Subject = msg.Subject,
 					Body = msg.Body,
 					From = msg.From.DisplayName
-				}).ToList();
+				} : null).Where(x => x != null).ToList();
 
 			foreach (var newMessage in absentMails)
 			{

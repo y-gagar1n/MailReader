@@ -1,14 +1,15 @@
-﻿var MailListController = function ($scope, $http, $location) {
+﻿var MailListController = function ($scope, $http, $location, $routeParams) {
 
-	function load(take, skip) {
-		$http.get("/api/mail" + "?take=" + take + "&skip=" + skip).then(function (response) {
+	function load(take, skip, mailbox) {
+		$http.get("/api/mail" + "?mailbox=" + mailbox + "&take=" + take + "&skip=" + skip).then(function (response) {
 			$scope.mails = response.data.Messages;
 			$scope.take = response.data.Take;
 			$scope.skip = response.data.Skip;
 		});
 	}
 
-	load(20, 0);
+	var mailbox = $routeParams.mailbox || "INBOX";
+	load(20, 0, mailbox);
 
 	$scope.openMailDetails = function(id) {
 		$location.path('/mail/' + id);
@@ -23,4 +24,4 @@
 	}
 };
 
-MailListController.inject = ['$scope', '$http', '$location'];
+MailListController.inject = ['$scope', '$http', '$location', '$routeParams'];

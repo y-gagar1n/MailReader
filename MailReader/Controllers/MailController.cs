@@ -23,9 +23,9 @@ namespace MailReader.Controllers
 
 	    [System.Web.Http.HttpGet]
 		[System.Web.Http.Route("api/mail")]
-		public MailPreviewCollection GetMails(int take = 20, int skip = 0)
+		public MailPreviewCollection GetMails(int take = 20, int skip = 0, string mailbox = "INBOX")
 	    {
-		    return new MailPreviewCollection(_fetcher.FetchRecentMailsPreview(take, skip).Select(x => new MailPreview()
+		    return new MailPreviewCollection(_fetcher.FetchRecentMailsPreview(take, skip, mailbox).Select(x => new MailPreview()
 		    {
 			    From = x.From,
 				Subject = x.Subject,
