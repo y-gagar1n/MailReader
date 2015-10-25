@@ -17,24 +17,21 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					@Html.ActionLink("Mail Reader", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+					@Html.ActionLink("Mail Reader", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
 				</div>
-				@*<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav">
-						<li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
-						<li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
-						<li><a href="/#/mail">MailDetails</a></li>
-					</ul>
-				</div>*@
 			</div>
 		</div>
-		<div class="container body-content">
-			<div ng-view></div>
+		<div class="main-content mail-table-container">
+			<div class="mailboxes-container">
+				<div ng-repeat="mailbox in mailboxes">{{mailbox}}</div>
+			</div>
+			<div class="container body-content">
+				<div ng-view></div>
 
-			<hr />
-			<footer>
-				<p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-			</footer>
+				<hr/>
+				<footer>
+				</footer>
+			</div>
 		</div>
 	</div>
 

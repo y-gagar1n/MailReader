@@ -90,5 +90,10 @@ namespace MailReader.Backend.Services
 			_client.DeleteMessage(uid);
 			_repo.DeleteMail(uid);
 		}
+
+		public IEnumerable<string> GetMailboxes()
+		{
+			return _client.ListMailboxes();
+		} 
 	}
 }

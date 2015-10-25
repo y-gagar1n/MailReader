@@ -38,6 +38,13 @@ namespace MailReader.Controllers
 	    }
 
 		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route("api/mailboxes")]
+		public IEnumerable<string> GetMailboxes()
+		{
+			return _fetcher.GetMailboxes();
+		}
+
+		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route("api/mail/{uid}")]
 		public MailDetails GetMails(uint uid)
 		{

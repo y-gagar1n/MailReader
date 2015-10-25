@@ -8,6 +8,8 @@
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+	width: 1000px;
+	float: left;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
@@ -46,7 +48,6 @@ div.mail-table-container {
 .mail-preview-table .cell {
 	padding: 3px 6px 3px 10px;
 	border-bottom: 1px #e5e5e5 solid;
-	font-size: 80%;
 	font-weight: bold;
 	vertical-align: middle;
 	white-space: nowrap;
@@ -107,5 +108,17 @@ div.mail-table-container {
 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .85)), to(rgba(247, 247, 247, .85)));
 	background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, .85), rgba(247, 247, 247, .85));
 	text-align: center;
+}
+
+.main-content {
+	float: left;
 	font-weight: bold;
+	font-size: 80%;
+}
+
+.mailboxes-container {
+	float: left;
+	width: 200px;
+	height: 350px;
+	padding-left: 35px;
 }
