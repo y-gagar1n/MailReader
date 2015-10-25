@@ -29,8 +29,22 @@ namespace MailReader.Backend.Services
 
 		public MailDetails GetMail(uint mailUid)
 		{
-			var msg = _client.GetMessage(mailUid, false);
-			return new MailDetails {Body = PrepareBody(msg.Body), From = msg.From.DisplayName, Subject = msg.Subject};
+			MailDetails cachedMail = _repo.GetMail(mailUid);
+			if (cachedMail != null)
+			{
+				return cachedMail;
+			}
+			else
+			{
+				var msg = _client.GetMessage(mailUid, false);
+				return new MailDetails
+				{
+					Body = PrepareBody(msg.Body),
+					From = msg.From.DisplayName,
+					Subject = msg.Subject,
+					Id = mailUid
+				};
+			}
 		}
 
 		public string PrepareBody(string input)
@@ -68,6 +82,12 @@ namespace MailReader.Backend.Services
 
 			return savedMails.Concat(newMessages);
 
+		}
+
+		public void DeleteMail(uint uid)
+		{
+			_client.DeleteMessage(uid);
+			_repo.DeleteMail(uid);
 		}
 	}
 }

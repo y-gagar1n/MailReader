@@ -39,5 +39,12 @@ namespace MailReader.Controllers
 		{
 			return _fetcher.GetMail(uid);
 		}
+
+		[System.Web.Http.HttpDelete]
+		[System.Web.Http.Route("api/mail/{uid}")]
+		public void DeleteMail(uint uid)
+		{
+			_fetcher.DeleteMail(uid);
+		}
 	}
 }
