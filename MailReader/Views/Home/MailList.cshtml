@@ -1,13 +1,17 @@
 ﻿<div class="mail-table-container">
 	<table class="mail-preview-table">
 		<colgroup>
-			<col class="null" />
-			<col class="from-col" />
-			<col class="header-col" />
+			<col class="null"/>
+			<col class="from-col"/>
+			<col class="header-col"/>
 		</colgroup>
 		<tr class="row" ng-repeat="mail in mails" ng-click="openMailDetails(mail.Id)">
 			<td class="cell">{{mail.From}}</td>
 			<td class="cell">{{mail.Subject}}</td>
 		</tr>
 	</table>
+	<div class="button-panel">
+		<div class="button" ng-click="openPreviousPage()"><</div>
+		<div class="button" ng-click="openNextPage()">></div>
+	</div>
 </div>

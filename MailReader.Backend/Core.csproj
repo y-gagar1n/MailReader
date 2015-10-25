@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\MailRepository.cs" />
+    <Compile Include="Models\MailPreviewCollection.cs" />
     <Compile Include="Services\MailCredentialsProvider.cs" />
     <Compile Include="Services\MailFetcher.cs" />
     <Compile Include="Models\MailDetails.cs" />

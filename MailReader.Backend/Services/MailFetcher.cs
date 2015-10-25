@@ -20,9 +20,9 @@ namespace MailReader.Backend.Services
 			_repo = new MailRepository();
 		}
 
-		public IEnumerable<MailDetails> FetchRecentMailsPreview()
+		public IEnumerable<MailDetails> FetchRecentMailsPreview(int take, int skip)
 		{
-			var msgs = FetchAllMessages();
+			var msgs = FetchAllMessages(take, skip);
 
 			return msgs;
 		}
@@ -54,12 +54,13 @@ namespace MailReader.Backend.Services
 			return string.Join("", htmlLines);
 		}
 		
-		private IEnumerable<MailDetails> FetchAllMessages()
+		private IEnumerable<MailDetails> FetchAllMessages(int take, int skip)
 		{
 			IEnumerable<uint> uids = _client
 				.Search(SearchCondition.All())
 				.Reverse()
-				.Take(20)
+				.Skip(skip)
+				.Take(take)
 				.ToList();
 
 			var cachedMails = _repo.GetMails(uids);

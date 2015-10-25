@@ -14,7 +14,7 @@ namespace MailReader.Controllers
 {
     public class MailController : ApiController
     {
-	    private static MailFetcher _fetcher;
+	    private static readonly MailFetcher _fetcher;
 
 	    static MailController()
 	    {
@@ -23,14 +23,18 @@ namespace MailReader.Controllers
 
 	    [System.Web.Http.HttpGet]
 		[System.Web.Http.Route("api/mail")]
-		public IEnumerable<MailPreview> GetMails()
+		public MailPreviewCollection GetMails(int take = 20, int skip = 0)
 	    {
-		    return _fetcher.FetchRecentMailsPreview().Select(x => new MailPreview()
+		    return new MailPreviewCollection(_fetcher.FetchRecentMailsPreview(take, skip).Select(x => new MailPreview()
 		    {
 			    From = x.From,
 				Subject = x.Subject,
 				Id = x.Id
-		    });
+		    }).ToList())
+		    {
+			    Skip = skip,
+				Take = take
+		    };
 	    }
 
 		[System.Web.Http.HttpGet]
