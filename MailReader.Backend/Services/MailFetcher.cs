@@ -56,31 +56,31 @@ namespace MailReader.Backend.Services
 		
 		private IEnumerable<MailDetails> FetchAllMessages()
 		{
-			var savedMails = _repo.GetMails().ToList();
-			var maxId = savedMails.Any() ? savedMails.Max(x => x.Id) : 0;
-
 			IEnumerable<uint> uids = _client
-				.Search(SearchCondition.GreaterThan(maxId))
+				.Search(SearchCondition.All())
 				.Reverse()
 				.Take(20)
-				.Where(x => x > maxId);
+				.ToList();
 
-			IList<MailDetails> newMessages = _client
-				.GetMessages(uids)
-				.Zip(uids, (msg, id) => new MailDetails
-			{
-				Id = id,
-				Subject = msg.Subject,
-				Body = msg.Body,
-				From = msg.From.DisplayName
-			}).ToList();
+			var cachedMails = _repo.GetMails(uids);
 
-			foreach (var newMessage in newMessages)
+			var absentUids = uids.Except(cachedMails.Select(x => x.Id)).ToList();
+
+			var absentMails = _client.GetMessages(absentUids)
+				.Zip(absentUids, (msg, id) => new MailDetails
+				{
+					Id = id,
+					Subject = msg.Subject,
+					Body = msg.Body,
+					From = msg.From.DisplayName
+				}).ToList();
+
+			foreach (var newMessage in absentMails)
 			{
 				_repo.SaveMail(newMessage);
 			}
 
-			return savedMails.Concat(newMessages);
+			return cachedMails.Concat(absentMails).OrderByDescending(x => x.Id);
 
 		}
 

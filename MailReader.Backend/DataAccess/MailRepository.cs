@@ -55,16 +55,46 @@ namespace MailReader.Backend.DataAccess
 			return connection;
 		}
 
-		public IList<MailDetails> GetMails()
+		public IList<MailDetails> GetAllMails()
 		{
 			var result = new List<MailDetails>();
 			using (var connection = CreateConnection())
 			{
-				string rawScript = ReadScript("GetMails");
+				string rawScript = ReadScript("GetAllMails");
 
 				SqlCommand cmd = connection.CreateCommand();
 				cmd.CommandText = rawScript;
 
+				SqlDataReader sqlReader = cmd.ExecuteReader(CommandBehavior.Default);
+
+				if (sqlReader.HasRows)
+				{
+					while (sqlReader.Read())
+					{
+						result.Add(new MailDetails
+						{
+							Id = (uint)sqlReader.GetInt32(0),
+							Subject = sqlReader.GetString(1),
+							Body = sqlReader.GetString(2),
+							From = sqlReader.GetString(3)
+						});
+					}
+				}
+			}
+			return result;
+		}
+
+		public IList<MailDetails> GetMails(IEnumerable<uint> ids)
+		{
+			var result = new List<MailDetails>();
+			using (var connection = CreateConnection())
+			{
+				SqlCommand cmd = connection.CreateCommand();
+				string rawScript = String.Format("SELECT Id, Subject, Body, [From] FROM Mails WHERE Id IN ({0})", 
+					AddParametersArray(ref cmd, ids.Select(x => (int)x).OfType<object>(), "Id"));
+				
+				cmd.CommandText = rawScript;
+				
 				SqlDataReader sqlReader = cmd.ExecuteReader(CommandBehavior.Default);
 
 				if (sqlReader.HasRows)
@@ -158,6 +188,21 @@ namespace MailReader.Backend.DataAccess
 			return input
 				.Replace("'", "''");
 			//.Replace(Environment.NewLine, "' + CHAR(13) + '");
+		}
+
+		private static string AddParametersArray(ref SqlCommand cmd, IEnumerable<object> values, string name)
+		{
+			var parameters = new List<string>();
+			int i = 0;
+			foreach (var value in values)
+			{
+				string paramName = String.Format("@{0}{1}", name, i);
+				cmd.Parameters.AddWithValue(paramName, value);
+				parameters.Add(paramName);
+				i++;
+			}
+
+			return string.Join(", ", parameters);
 		}
 	}
 }
